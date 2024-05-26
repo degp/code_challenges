@@ -4,23 +4,24 @@ This module contains an optimized object oriented solution for Advent of Code (A
 Package: code_challenges
 Subpackage: aoc/y2k22/day_1
 File: count_calories_oop.py
-Author: Waan <admin@waan.email>
+Author: waanlabs <support@waan.email>
 Version: 1.0.0
-Created: 01/12/2022 by admin@waan.email
-Modified: 28/04/2024 by admin@waan.email
+Created: 01/12/2022 by waanlabs
+Modified: 20/05/2024 by waanlabs
 """
 
 import heapq
 import itertools
 import os
 from typing import Union
+from data_config import DataConfig
+from aoc_data_reader import AocDataReader
 
 # import gc
 # import cProfile
 # import pstats
-from icecream import ic
-from pympler import asizeof
-
+# from icecream import ic
+# from pympler import asizeof
 # from pydantic import BaseModel
 
 
@@ -56,20 +57,22 @@ class CountCalories:
     file_path: str
     calories_sum: list[int]
 
-    def __init__(self, file_path: str) -> None:
+    def __init__(self, data_config: DataConfig, data_reader: AocDataReader) -> None:
         """
-        Constructs all the necessary attributes for the calorie counter object.
-
-        Parameters
-        ----------
-        file_path: str
-            The file path of the calorie data.
+                Constructs all the necessary attributes for the calorie counter object.
+        ⌈
+                Parameters
+                ----------
+                file_path: str
+                    The file path of the calorie data.
         """
-        self.puzzle_file_path = file_path
+        self.puzzle_file_path = data_config
+        self.data_reader = data_reader
+        self.calories_sum = []
 
     def __del__(self) -> None:
         """
-        Call destructor to free up memory (C/zig-style).
+        Call destructor to free up memory (C-style).
 
         Note
         ----
@@ -155,16 +158,10 @@ class CountCalories:
         FileNotFoundError
             If the file is not found.
         """
-        calories: list[Union[int | str]]
+        if not self.puzzle_file_path:
+            raise FileNotFoundError(f"File not found: {self.puzzle_file_path}.")
 
-        try:
-            with open(self.puzzle_file_path, "r", encoding="utf-8") as file:
-                calories = [int(line) if line.strip() else "" for line in file]
-
-        except ValueError as error:
-            raise ValueError(f"Invalid data: {error}") from error
-
-        return calories
+        return self.data_reader.read_data(self.puzzle_file_path)
 
     def process_calories(self, calories: list[Union[int | str]]) -> None:
         """
@@ -181,7 +178,6 @@ class CountCalories:
             if not is_empty
         ]
 
-    @staticmethod
     def max_group_sum(self) -> int | None:
         """
         Returns the maximum sum of calorie groups.
@@ -205,43 +201,43 @@ class CountCalories:
         return sum(heapq.nlargest(3, self.calories_sum)) if self.calories_sum else None
 
 
-def test() -> None:
-    """
-    This function creates an instance of the CalorieCounter class, reads and processes the calorie
-    data, and then prints the sum of  maximum calories group  and the sum of the three largest
-    calorie groups.
-    """
-    try:
-        file_path = "./code_challenges/aoc/y2k22/day_1/puzzle-input.txt"
-        count_calories = CountCalories(file_path)
-        calories_list = count_calories.read_calories()
-        # ic(calories_list)
-        count_calories.process_calories(calories_list)
-        ic(count_calories.puzzle_file_path)
-        ic(count_calories.max_group_sum())
-        ic(count_calories.sum_of_largest_three())
-        del count_calories.puzzle_file_path
-        print(asizeof.asized(count_calories, detail=1).format())
+# def test() -> None:
+#     """
+#     This function creates an instance of the CalorieCounter class, reads and processes the calorie
+#     data, and then prints the sum of  maximum calories group  and the sum of the three largest
+#     calorie groups.
+#     """
+#     try:
+#         file_path = "./code_challenges/aoc/y2k22/day_1/puzzle-input.txt"
+#         count_calories = CountCalories(file_path)
+#         calories_list = count_calories.read_calories()
+#         # ic(calories_list)
+#         count_calories.process_calories(calories_list)
+#         ic(count_calories.puzzle_file_path)
+#         ic(count_calories.max_group_sum())
+#         ic(count_calories.sum_of_largest_three())
+#         del count_calories.puzzle_file_path
+#         print(asizeof.asized(count_calories, detail=1).format())
 
-    except (FileNotFoundError, TypeError, ValueError) as error:
-        print(f"System error: {error}")
+#     except (FileNotFoundError, TypeError, ValueError) as error:
+#         print(f"System error: {error}")
 
 
-if __name__ == "__main__":
-    """
-    If the script is being run directly (not imported as a module), the test function is called.
-    """
-    # gc.disable()
-    # profiler = cProfile.Profile()
-    # profiler.enable()
-    test()
-    # profiler.disable()
-    # profiler.print_stats(sort="time")
-    # stats = pstats.Stats(profiler).sort_stats("time")
-    # stats.dump_stats("my.prof")
-    # gc.enable()
+# if __name__ == "__main__":
+#     """
+#     If the script is being run directly (not imported as a module), the test function is called.
+#     """
+#     gc.disable()
+#     profiler = cProfile.Profile()
+#     profiler.enable()
+#     test()
+#     profiler.disable()
+#     profiler.print_stats(sort="time")
+#     stats = pstats.Stats(profiler).sort_stats("time")
+#     stats.dump_stats("my.prof")
+#     gc.enable()
 
 """
 Path: code_challenges/aoc/y2k22/day_1/calorie_counter.py
-End of calorie_counter.py
+End of count_calories_oop.py
 """
