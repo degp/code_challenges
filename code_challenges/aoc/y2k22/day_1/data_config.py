@@ -1,17 +1,20 @@
-from pydantic import BaseModel, validator
+# TODO | Add docblocks
 import os
+from pydantic import BaseModel, validator
 
 
 class DataConfig(BaseModel):
+    # TODO | Add docblock
     file_path: str
 
     @validator("file_path")
-    def validate_file_path(cls, validator):
-        if not validator:
+    def validate_file_path(cls, file_path: str) -> str:
+        # TODO | Add docblock
+        if not file_path:
             raise ValueError("File path must not be empty.")
-        if not isinstance(validator, str):
+        if not isinstance(file_path, str):
             raise TypeError("File path must be a string.")
-        if not os.path.exists(validator):
-            raise FileNotFoundError(f"File not found: {validator}")
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
 
-        return validator
+        return file_path
